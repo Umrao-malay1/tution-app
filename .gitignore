@@ -1,0 +1,31 @@
+## dependencies / builds
+node_modules/
+dist/
+build/
+.next/
+.nuxt/
+.turbo/
+.vite/
+coverage/
+
+## env / secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+secret keys
+
+## logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+## OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
