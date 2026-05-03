@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: tution-app-backend
+    runtime: node
+    plan: free
+    rootDir: backendserver
+    buildCommand: npm ci
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
