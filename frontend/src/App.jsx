@@ -17,6 +17,7 @@ export default function App() {
   const [error, setError] = useState(null)
   const [subject, setSubject] = useState('')
   const [city, setCity] = useState('')
+  const [lastQuery, setLastQuery] = useState({ subject: '', city: '' })
 
   const loadTutors = useCallback(async (subj, cit) => {
     setLoading(true)
@@ -34,6 +35,7 @@ export default function App() {
       }
       const data = await res.json()
       setTutors(Array.isArray(data) ? data : [])
+      setLastQuery({ subject: subj.trim(), city: cit.trim() })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not load tutors')
       setTutors([])
@@ -46,44 +48,47 @@ export default function App() {
     loadTutors('', '')
   }, [loadTutors])
 
+  const queryLabel = (() => {
+    const parts = []
+    if (lastQuery.subject) parts.push(`Subject: ${lastQuery.subject}`)
+    if (lastQuery.city) parts.push(`City: ${lastQuery.city}`)
+    return parts.length ? parts.join(' • ') : 'All tutors'
+  })()
+
   return (
-    <div className="app-root">
-      <header className="app-header">
+    <div className="app">
+      <header className="topbar">
         <div className="brand">
-          <img src={heroImg} width={48} height={51} alt="" className="brand-mark" />
+          <img src={heroImg} alt="" className="brand-mark" />
           <div>
-            <h1 className="brand-title">Tution App</h1>
-            <p className="brand-sub">Find approved tutors near you</p>
+            <h1>Tution App</h1>
+            <p>Find approved tutors near you</p>
           </div>
         </div>
-        <p className="api-hint">
-          API: <code>{apiBase}</code>
-        </p>
+        <nav className="nav" aria-label="Primary">
+          <button
+            type="button"
+            className={`tab ${tab === 'browse' ? 'active' : ''}`}
+            onClick={() => setTab('browse')}
+          >
+            Browse
+          </button>
+          <button
+            type="button"
+            className={`tab ${tab === 'register' ? 'active' : ''}`}
+            onClick={() => setTab('register')}
+          >
+            Register
+          </button>
+          <button
+            type="button"
+            className={`tab ${tab === 'admin' ? 'active' : ''}`}
+            onClick={() => setTab('admin')}
+          >
+            Admin
+          </button>
+        </nav>
       </header>
-
-      <nav className="app-nav" aria-label="Primary">
-        <button
-          type="button"
-          className={tab === 'browse' ? 'active' : ''}
-          onClick={() => setTab('browse')}
-        >
-          Browse
-        </button>
-        <button
-          type="button"
-          className={tab === 'register' ? 'active' : ''}
-          onClick={() => setTab('register')}
-        >
-          Register
-        </button>
-        <button
-          type="button"
-          className={tab === 'admin' ? 'active' : ''}
-          onClick={() => setTab('admin')}
-        >
-          Admin
-        </button>
-      </nav>
 
       {tab === 'register' && <RegisterForm apiBase={apiBase} />}
 
@@ -93,74 +98,109 @@ export default function App() {
 
       {tab === 'browse' && (
         <>
-          <section className="filters" aria-label="Search tutors">
-            <label className="field">
-              <span>Subject</span>
-              <input
-                type="text"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                placeholder="e.g. Mathematics"
-                autoComplete="off"
-              />
-            </label>
-            <label className="field">
-              <span>City</span>
-              <input
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="e.g. Mumbai"
-                autoComplete="off"
-              />
-            </label>
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={() => loadTutors(subject, city)}
-            >
-              Search
-            </button>
+          <section className="hero" aria-label="Welcome">
+            <h2>Find the right tutor, faster.</h2>
+            <p>
+              Search by subject and city, register as a tutor in minutes, and approve listings from
+              the admin panel.
+            </p>
+            <div className="meta-row">
+              <span className="pill">
+                API <code>{apiBase}</code>
+              </span>
+              <span className="pill">
+                Showing <strong>{loading ? '—' : tutors.length}</strong> result(s) ·{' '}
+                <span className="muted">{queryLabel}</span>
+              </span>
+            </div>
+
+            <div className="filters" aria-label="Search tutors">
+              <label className="field">
+                <span className="label">Subject</span>
+                <input
+                  className="input"
+                  type="text"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="e.g. Mathematics"
+                  autoComplete="off"
+                />
+              </label>
+              <label className="field">
+                <span className="label">City</span>
+                <input
+                  className="input"
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="e.g. Mumbai"
+                  autoComplete="off"
+                />
+              </label>
+              <button type="button" className="btn" onClick={() => loadTutors(subject, city)}>
+                Search
+              </button>
+            </div>
           </section>
 
-          <section className="tutors-section" aria-live="polite">
-            {loading && <p className="status">Loading tutors…</p>}
+          <section className="section" aria-live="polite">
+            {loading && (
+              <ul className="grid" aria-label="Loading">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <li key={i} className="card">
+                    <div className="skeleton" style={{ width: '60%' }} />
+                    <div style={{ height: 10 }} />
+                    <div className="skeleton" style={{ width: '40%' }} />
+                    <div style={{ height: 14 }} />
+                    <div className="skeleton" style={{ width: '80%' }} />
+                    <div style={{ height: 10 }} />
+                    <div className="skeleton" style={{ width: '72%' }} />
+                  </li>
+                ))}
+              </ul>
+            )}
             {!loading && error && (
               <div className="status error" role="alert">
                 <strong>Could not reach the API.</strong> {error}
-                <p className="hint">
-                  Local: create <code>frontend/.env</code> from <code>.env.example</code> and set{' '}
-                  <code>VITE_API_URL</code>. On Vercel, add the same env var and redeploy.
-                </p>
+                <div className="hint">
+                  Check that <code>VITE_API_URL</code> points to your Render backend and that the
+                  backend is online.
+                </div>
               </div>
             )}
             {!loading && !error && tutors.length === 0 && (
-              <div className="status empty">
-                <p>No approved tutors match yet.</p>
-                <p className="hint">
-                  Tutors can register under <strong>Register</strong>; they appear here after{' '}
-                  <strong>Admin</strong> approval.
-                </p>
+              <div className="status">
+                <strong>No tutors found.</strong>
+                <div className="hint">
+                  Try a different subject/city, or register a tutor under <strong>Register</strong>{' '}
+                  and approve them under <strong>Admin</strong>.
+                </div>
               </div>
             )}
             {!loading && !error && tutors.length > 0 && (
-              <ul className="tutor-grid">
+              <ul className="grid" aria-label="Tutors list">
                 {tutors.map((t) => (
-                  <li key={t._id} className="tutor-card">
-                    <h2 className="tutor-name">{t.name}</h2>
-                    <p className="tutor-meta">
+                  <li key={t._id} className="card">
+                    <h3>{t.name}</h3>
+                    <div className="muted">
                       {t.city}
                       {t.area ? ` · ${t.area}` : ''}
-                    </p>
-                    <p className="tutor-meta">
-                      {(t.subjects || []).join(', ') || 'Subjects not listed'}
-                    </p>
-                    <dl className="tutor-dl">
+                    </div>
+                    <div className="tags" aria-label="Subjects">
+                      {(t.subjects || []).length ? (
+                        t.subjects.slice(0, 6).map((s) => (
+                          <span className="tag" key={s}>
+                            {s}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="muted">Subjects not listed</span>
+                      )}
+                    </div>
+                    <dl className="kv">
                       <div>
-                        <dt>Fees / month</dt>
-                        <dd>
-                          {typeof t.feesPerMonth === 'number' ? `₹${t.feesPerMonth}` : '—'}
-                        </dd>
+                        <dt>Fees</dt>
+                        <dd>{typeof t.feesPerMonth === 'number' ? `₹${t.feesPerMonth}` : '—'}</dd>
                       </div>
                       <div>
                         <dt>Mode</dt>
@@ -171,7 +211,7 @@ export default function App() {
                         <dd>{t.rating ?? 0}</dd>
                       </div>
                     </dl>
-                    {t.about && <p className="tutor-about">{t.about}</p>}
+                    {t.about && <p className="hint">{t.about}</p>}
                   </li>
                 ))}
               </ul>
@@ -179,6 +219,13 @@ export default function App() {
           </section>
         </>
       )}
+
+      <footer className="footer">
+        <span className="muted">© {new Date().getFullYear()} Tution App</span>
+        <span className="muted">
+          Tip: On Render free tier, the backend may take a few seconds to “wake up”.
+        </span>
+      </footer>
     </div>
   )
 }

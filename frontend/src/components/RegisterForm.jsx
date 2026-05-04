@@ -86,107 +86,146 @@ export default function RegisterForm({ apiBase }) {
   }
 
   return (
-    <section className="panel register-panel" aria-labelledby="register-heading">
-      <h2 id="register-heading" className="panel-title">
-        Register as a tutor
-      </h2>
-      <p className="panel-lead">
-        Listings stay hidden until an administrator approves your profile.
-      </p>
+    <section className="section" aria-labelledby="register-heading">
+      <div className="hero">
+        <h2 id="register-heading">Register as a tutor</h2>
+        <p>
+          Fill this once. Your profile will appear in search after <strong>Admin</strong> approval.
+        </p>
+      </div>
 
       {message && (
-        <p className="status success" role="status">
-          {message}
-        </p>
+        <div className="status success" role="status">
+          <strong>Done.</strong> {message}
+        </div>
       )}
       {error && (
-        <p className="status error" role="alert">
-          {error}
-        </p>
+        <div className="status error" role="alert">
+          <strong>Fix this:</strong> {error}
+        </div>
       )}
 
-      <form className="form-register" onSubmit={handleSubmit}>
-        <label className="field">
-          <span>Full name *</span>
-          <input
-            required
-            value={form.name}
-            onChange={(e) => update('name', e.target.value)}
-            autoComplete="name"
-          />
-        </label>
-        <label className="field">
-          <span>Phone *</span>
-          <input
-            required
-            type="tel"
-            value={form.phone}
-            onChange={(e) => update('phone', e.target.value)}
-            autoComplete="tel"
-          />
-        </label>
-        <label className="field field-span-2">
-          <span>Subjects * (comma-separated)</span>
-          <input
-            required
-            placeholder="Mathematics, Physics"
-            value={form.subjects}
-            onChange={(e) => update('subjects', e.target.value)}
-          />
-        </label>
-        <label className="field">
-          <span>City *</span>
-          <input required value={form.city} onChange={(e) => update('city', e.target.value)} />
-        </label>
-        <label className="field">
-          <span>Area</span>
-          <input value={form.area} onChange={(e) => update('area', e.target.value)} />
-        </label>
-        <label className="field">
-          <span>Fees per month (₹) *</span>
-          <input
-            required
-            inputMode="decimal"
-            value={form.feesPerMonth}
-            onChange={(e) => update('feesPerMonth', e.target.value)}
-          />
-        </label>
-        <label className="field">
-          <span>Teaching mode *</span>
-          <select
-            value={form.teachingMode}
-            onChange={(e) => update('teachingMode', e.target.value)}
-          >
-            <option value="home">Home</option>
-            <option value="online">Online</option>
-            <option value="both">Both</option>
-          </select>
-        </label>
-        <label className="field field-span-2">
-          <span>Classes taught</span>
-          <input
-            placeholder="e.g. Classes 8–12"
-            value={form.classesTaught}
-            onChange={(e) => update('classesTaught', e.target.value)}
-          />
-        </label>
-        <label className="field field-span-2">
-          <span>Experience</span>
-          <input
-            value={form.experience}
-            onChange={(e) => update('experience', e.target.value)}
-          />
-        </label>
-        <label className="field field-span-2">
-          <span>About</span>
-          <textarea
-            rows={3}
-            value={form.about}
-            onChange={(e) => update('about', e.target.value)}
-          />
-        </label>
-        <div className="form-actions field-span-2">
-          <button type="submit" className="btn-primary" disabled={submitting}>
+      <form className="section" onSubmit={handleSubmit}>
+        <div className="card">
+          <h3>Basic details</h3>
+          <div className="hint muted">Fields marked * are required. Subjects should be comma-separated.</div>
+          <div style={{ height: 14 }} />
+          <div className="filters" style={{ gridTemplateColumns: '1fr 1fr' }}>
+            <label className="field">
+              <span className="label">Full name *</span>
+              <input
+                className="input"
+                required
+                value={form.name}
+                onChange={(e) => update('name', e.target.value)}
+                autoComplete="name"
+              />
+            </label>
+            <label className="field">
+              <span className="label">Phone *</span>
+              <input
+                className="input"
+                required
+                type="tel"
+                value={form.phone}
+                onChange={(e) => update('phone', e.target.value)}
+                autoComplete="tel"
+              />
+            </label>
+          </div>
+          <div style={{ height: 12 }} />
+          <label className="field">
+            <span className="label">Subjects * (comma-separated)</span>
+            <input
+              className="input"
+              required
+              placeholder="Mathematics, Physics"
+              value={form.subjects}
+              onChange={(e) => update('subjects', e.target.value)}
+            />
+          </label>
+          <div style={{ height: 12 }} />
+          <div className="filters" style={{ gridTemplateColumns: '1fr 1fr' }}>
+            <label className="field">
+              <span className="label">City *</span>
+              <input
+                className="input"
+                required
+                value={form.city}
+                onChange={(e) => update('city', e.target.value)}
+              />
+            </label>
+            <label className="field">
+              <span className="label">Area</span>
+              <input
+                className="input"
+                value={form.area}
+                onChange={(e) => update('area', e.target.value)}
+              />
+            </label>
+          </div>
+        </div>
+
+        <div className="card">
+          <h3>Teaching info</h3>
+          <div style={{ height: 14 }} />
+          <div className="filters" style={{ gridTemplateColumns: '1fr 1fr' }}>
+            <label className="field">
+              <span className="label">Fees per month (₹) *</span>
+              <input
+                className="input"
+                required
+                inputMode="decimal"
+                value={form.feesPerMonth}
+                onChange={(e) => update('feesPerMonth', e.target.value)}
+              />
+            </label>
+            <label className="field">
+              <span className="label">Teaching mode *</span>
+              <select
+                className="select"
+                value={form.teachingMode}
+                onChange={(e) => update('teachingMode', e.target.value)}
+              >
+                <option value="home">Home</option>
+                <option value="online">Online</option>
+                <option value="both">Both</option>
+              </select>
+            </label>
+          </div>
+          <div style={{ height: 12 }} />
+          <label className="field">
+            <span className="label">Classes taught</span>
+            <input
+              className="input"
+              placeholder="e.g. Classes 8–12"
+              value={form.classesTaught}
+              onChange={(e) => update('classesTaught', e.target.value)}
+            />
+          </label>
+          <div style={{ height: 12 }} />
+          <label className="field">
+            <span className="label">Experience</span>
+            <input
+              className="input"
+              value={form.experience}
+              onChange={(e) => update('experience', e.target.value)}
+            />
+          </label>
+          <div style={{ height: 12 }} />
+          <label className="field">
+            <span className="label">About</span>
+            <textarea
+              className="textarea"
+              rows={4}
+              value={form.about}
+              onChange={(e) => update('about', e.target.value)}
+            />
+          </label>
+        </div>
+
+        <div className="section">
+          <button type="submit" className="btn" disabled={submitting}>
             {submitting ? 'Submitting…' : 'Submit registration'}
           </button>
         </div>

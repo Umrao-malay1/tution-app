@@ -52,14 +52,23 @@
 
 body {
   margin: 0;
+  background: radial-gradient(
+      900px 450px at 20% 10%,
+      color-mix(in srgb, var(--accent), transparent 90%),
+      transparent 60%
+    ),
+    radial-gradient(
+      800px 400px at 80% 0%,
+      color-mix(in srgb, var(--accent), transparent 92%),
+      transparent 55%
+    ),
+    var(--bg);
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
+  width: 100%;
   margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
+  text-align: left;
   min-height: 100svh;
   display: flex;
   flex-direction: column;

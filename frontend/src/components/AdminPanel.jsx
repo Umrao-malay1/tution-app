@@ -91,95 +91,112 @@ export default function AdminPanel({ apiBase, onTutorUpdated }) {
   }
 
   return (
-    <section className="panel admin-panel" aria-labelledby="admin-heading">
-      <h2 id="admin-heading" className="panel-title">
-        Admin
-      </h2>
-      <p className="panel-lead">
-        Set <code>ADMIN_SECRET</code> on the server (Render → Environment). Send it as header{' '}
-        <code>X-Admin-Secret</code>. Do not commit the secret to GitHub.
-      </p>
+    <section className="section" aria-labelledby="admin-heading">
+      <div className="hero">
+        <h2 id="admin-heading">Admin</h2>
+        <p>
+          This screen is protected by a server secret. Set <code>ADMIN_SECRET</code> on Render and
+          paste it here to approve/revoke tutor listings.
+        </p>
+      </div>
 
-      <div className="admin-controls">
-        <label className="field admin-secret-field">
-          <span>Admin secret</span>
-          <input
-            type="password"
-            autoComplete="off"
-            value={secret}
-            onChange={(e) => setSecret(e.target.value)}
-            placeholder="Same value as ADMIN_SECRET"
-          />
-        </label>
-        <label className="checkbox-field">
+      <div className="card section">
+        <div className="filters" style={{ gridTemplateColumns: '2fr 1fr auto' }}>
+          <label className="field">
+            <span className="label">Admin secret</span>
+            <input
+              className="input"
+              type="password"
+              autoComplete="off"
+              value={secret}
+              onChange={(e) => setSecret(e.target.value)}
+              placeholder="Same value as ADMIN_SECRET"
+            />
+          </label>
+          <label className="field">
+            <span className="label">List</span>
+            <select className="select" value={status} onChange={(e) => setStatus(e.target.value)}>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="all">All</option>
+            </select>
+          </label>
+          <button type="button" className="btn" onClick={() => load()} disabled={loading}>
+            {loading ? 'Loading…' : 'Refresh'}
+          </button>
+        </div>
+
+        <label className="checkbox-field" style={{ marginTop: 12 }}>
           <input
             type="checkbox"
             checked={rememberDevice}
             onChange={(e) => setRememberDevice(e.target.checked)}
           />
-          <span>Remember on this device (session storage)</span>
+          <span>Remember secret on this device (session storage)</span>
         </label>
-        <label className="field">
-          <span>List</span>
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="pending">Pending approval</option>
-            <option value="approved">Approved</option>
-            <option value="all">All</option>
-          </select>
-        </label>
-        <button type="button" className="btn-primary" onClick={() => load()} disabled={loading}>
-          {loading ? 'Loading…' : 'Refresh'}
-        </button>
       </div>
 
       {error && (
-        <p className="status error" role="alert">
-          {error}
-        </p>
+        <div className="status error section" role="alert">
+          <strong>Admin request failed.</strong> {error}
+        </div>
       )}
 
       {!loading && !error && rows.length === 0 && (
-        <p className="status empty">No tutors in this list.</p>
+        <div className="status section">No tutors in this list.</div>
       )}
 
       {rows.length > 0 && (
-        <ul className="admin-list">
+        <ul className="section" style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: 12 }}>
           {rows.map((t) => (
-            <li key={t._id} className="admin-row">
-              <div className="admin-row-main">
-                <strong>{t.name}</strong>
-                <span className="admin-meta">
-                  {t.phone} · {t.city}
-                  {t.isApproved ? (
-                    <span className="badge approved">Approved</span>
+            <li key={t._id} className="card">
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                <div style={{ minWidth: 0 }}>
+                  <h3 style={{ marginBottom: 4 }}>{t.name}</h3>
+                  <div className="muted">
+                    {t.phone} · {t.city}{t.area ? ` · ${t.area}` : ''}
+                  </div>
+                  <div className="tags">
+                    {(t.subjects || []).slice(0, 10).map((s) => (
+                      <span className="tag" key={s}>
+                        {s}
+                      </span>
+                    ))}
+                    {!t.subjects?.length && <span className="muted">No subjects</span>}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <span className="pill">
+                    {t.isApproved ? (
+                      <span style={{ color: 'inherit' }}>Approved</span>
+                    ) : (
+                      <span style={{ color: 'inherit' }}>Pending</span>
+                    )}
+                  </span>
+                  {!t.isApproved ? (
+                    <button
+                      type="button"
+                      className="btn"
+                      disabled={busyId === t._id}
+                      onClick={() => setApproved(t._id, true)}
+                    >
+                      Approve
+                    </button>
                   ) : (
-                    <span className="badge pending">Pending</span>
+                    <button
+                      type="button"
+                      className="btn"
+                      disabled={busyId === t._id}
+                      onClick={() => setApproved(t._id, false)}
+                      style={{
+                        color: 'var(--text-h)',
+                        background: 'color-mix(in srgb, var(--social-bg), transparent 0%)',
+                      }}
+                    >
+                      Revoke
+                    </button>
                   )}
-                </span>
-                <span className="admin-meta subtle">
-                  {(t.subjects || []).join(', ') || 'No subjects'}
-                </span>
-              </div>
-              <div className="admin-row-actions">
-                {!t.isApproved ? (
-                  <button
-                    type="button"
-                    className="btn-small btn-approve"
-                    disabled={busyId === t._id}
-                    onClick={() => setApproved(t._id, true)}
-                  >
-                    Approve
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    className="btn-small btn-revoke"
-                    disabled={busyId === t._id}
-                    onClick={() => setApproved(t._id, false)}
-                  >
-                    Revoke
-                  </button>
-                )}
+                </div>
               </div>
             </li>
           ))}
