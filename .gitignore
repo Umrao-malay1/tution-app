@@ -13,6 +13,8 @@ coverage/
 .env.*
 !.env.example
 !.env.*.example
+# Public build-time defaults for Vite (no secrets)
+!frontend/.env.production
 secret keys
 
 ## logs

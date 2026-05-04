@@ -1,122 +1,145 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import heroImg from './assets/hero.png'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+function getApiBase() {
+  const raw = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
+  return String(raw).replace(/\/+$/, '')
+}
+
+export default function App() {
+  const apiBase = useMemo(() => getApiBase(), [])
+  const [tutors, setTutors] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [subject, setSubject] = useState('')
+  const [city, setCity] = useState('')
+
+  const loadTutors = useCallback(async (subj, cit) => {
+    setLoading(true)
+    setError(null)
+    const params = new URLSearchParams()
+    if (subj.trim()) params.set('subject', subj.trim())
+    if (cit.trim()) params.set('city', cit.trim())
+    const q = params.toString()
+    const url = `${apiBase}/api/tutors${q ? `?${q}` : ''}`
+    try {
+      const res = await fetch(url)
+      if (!res.ok) {
+        const text = await res.text()
+        throw new Error(text || `Request failed (${res.status})`)
+      }
+      const data = await res.json()
+      setTutors(Array.isArray(data) ? data : [])
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not load tutors')
+      setTutors([])
+    } finally {
+      setLoading(false)
+    }
+  }, [apiBase])
+
+  useEffect(() => {
+    loadTutors('', '')
+  }, [loadTutors])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="app-root">
+      <header className="app-header">
+        <div className="brand">
+          <img src={heroImg} width={48} height={51} alt="" className="brand-mark" />
+          <div>
+            <h1 className="brand-title">Tution App</h1>
+            <p className="brand-sub">Find approved tutors near you</p>
+          </div>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
+        <p className="api-hint">
+          API: <code>{apiBase}</code>
+        </p>
+      </header>
+
+      <section className="filters" aria-label="Search tutors">
+        <label className="field">
+          <span>Subject</span>
+          <input
+            type="text"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            placeholder="e.g. Mathematics"
+            autoComplete="off"
+          />
+        </label>
+        <label className="field">
+          <span>City</span>
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="e.g. Mumbai"
+            autoComplete="off"
+          />
+        </label>
         <button
           type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+          className="btn-primary"
+          onClick={() => loadTutors(subject, city)}
         >
-          Count is {count}
+          Search
         </button>
       </section>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
+      <section className="tutors-section" aria-live="polite">
+        {loading && <p className="status">Loading tutors…</p>}
+        {!loading && error && (
+          <div className="status error" role="alert">
+            <strong>Could not reach the API.</strong> {error}
+            <p className="hint">
+              Local: create <code>frontend/.env</code> from <code>.env.example</code> and set{' '}
+              <code>VITE_API_URL</code>. On Vercel, add the same env var and redeploy.
+            </p>
+          </div>
+        )}
+        {!loading && !error && tutors.length === 0 && (
+          <div className="status empty">
+            <p>No approved tutors match yet.</p>
+            <p className="hint">
+              New registrations stay pending until <code>isApproved</code> is set in the database.
+              Try the API with a tutor that has <code>isApproved: true</code>.
+            </p>
+          </div>
+        )}
+        {!loading && !error && tutors.length > 0 && (
+          <ul className="tutor-grid">
+            {tutors.map((t) => (
+              <li key={t._id} className="tutor-card">
+                <h2 className="tutor-name">{t.name}</h2>
+                <p className="tutor-meta">
+                  {t.city}
+                  {t.area ? ` · ${t.area}` : ''}
+                </p>
+                <p className="tutor-meta">
+                  {(t.subjects || []).join(', ') || 'Subjects not listed'}
+                </p>
+                <dl className="tutor-dl">
+                  <div>
+                    <dt>Fees / month</dt>
+                    <dd>{typeof t.feesPerMonth === 'number' ? `₹${t.feesPerMonth}` : '—'}</dd>
+                  </div>
+                  <div>
+                    <dt>Mode</dt>
+                    <dd>{t.teachingMode ?? '—'}</dd>
+                  </div>
+                  <div>
+                    <dt>Rating</dt>
+                    <dd>{t.rating ?? 0}</dd>
+                  </div>
+                </dl>
+                {t.about && <p className="tutor-about">{t.about}</p>}
+              </li>
+            ))}
           </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
+        )}
       </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    </div>
   )
 }
-
-export default App
