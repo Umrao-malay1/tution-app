@@ -26,7 +26,34 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const tutor = new Tutor(req.body);
+    const {
+      name,
+      phone,
+      subjects,
+      city,
+      area,
+      feesPerMonth,
+      teachingMode,
+      classesTaught,
+      experience,
+      about,
+    } = req.body;
+
+    const tutor = new Tutor({
+      name,
+      phone,
+      subjects,
+      city,
+      area,
+      feesPerMonth,
+      teachingMode,
+      classesTaught,
+      experience,
+      about,
+      isApproved: false,
+      rating: 0,
+    });
+
     await tutor.save();
     res.status(201).json(tutor);
   } catch (err) {

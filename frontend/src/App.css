@@ -295,6 +295,11 @@
   outline-offset: 2px;
 }
 
+.btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .tutors-section .status {
   margin: 0;
   padding: 16px 18px;
@@ -376,4 +381,258 @@
   margin: 12px 0 0;
   font-size: 0.9rem;
   line-height: 1.45;
+}
+
+.app-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.app-nav button {
+  font: inherit;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.app-nav button:hover {
+  border-color: var(--accent-border);
+}
+
+.app-nav button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.app-nav button.active {
+  border-color: transparent;
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.panel {
+  margin-bottom: 40px;
+}
+
+.panel-title {
+  margin: 0 0 8px;
+  font-size: 1.35rem;
+  color: var(--text-h);
+}
+
+.panel-lead {
+  margin: 0 0 20px;
+  font-size: 0.95rem;
+  max-width: 52ch;
+}
+
+.panel-lead code {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  background: var(--code-bg);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.panel .status {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--social-bg);
+}
+
+.panel .status.success {
+  border-color: rgba(22, 163, 74, 0.35);
+}
+
+.panel .status.error {
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+.form-register {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px 18px;
+}
+
+@media (max-width: 640px) {
+  .form-register {
+    grid-template-columns: 1fr;
+  }
+}
+
+.field-span-2 {
+  grid-column: span 2;
+}
+
+@media (max-width: 640px) {
+  .field-span-2 {
+    grid-column: span 1;
+  }
+}
+
+.field select,
+.field textarea {
+  font: inherit;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+.field select:focus-visible,
+.field textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.admin-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+
+.admin-secret-field {
+  flex: 1 1 260px;
+  min-width: 200px;
+}
+
+.checkbox-field {
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-h);
+}
+
+.checkbox-field input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--accent);
+}
+
+.admin-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+}
+
+.admin-row-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1 1 200px;
+}
+
+.admin-meta {
+  font-size: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.admin-meta.subtle {
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.admin-row-actions {
+  flex-shrink: 0;
+}
+
+.badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.badge.pending {
+  background: rgba(234, 179, 8, 0.2);
+  color: #a16207;
+}
+
+.badge.approved {
+  background: rgba(34, 197, 94, 0.18);
+  color: #15803d;
+}
+
+@media (prefers-color-scheme: dark) {
+  .badge.pending {
+    color: #facc15;
+  }
+
+  .badge.approved {
+    color: #4ade80;
+  }
+}
+
+.btn-small {
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  background: var(--accent-bg);
+  color: var(--accent);
+}
+
+.btn-small:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-small:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn-revoke {
+  color: var(--text-h);
+  background: var(--social-bg);
 }
