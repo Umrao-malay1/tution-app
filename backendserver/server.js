@@ -2,6 +2,8 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 
 const tutorsRouter = require('./routes/tutors');
@@ -9,12 +11,22 @@ const adminRouter = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://localhost:5173';
 
-app.use(cors());
+app.use(cors({ origin: FRONTEND_ORIGIN }));
+app.use(helmet());
 app.use(express.json());
 
 app.use('/api/tutors', tutorsRouter);
-app.use('/api/admin', adminRouter);
+
+const adminLimiter = rateLimit({
+  windowMs: 60_000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: 'Too many admin requests, please wait a moment.' },
+});
+app.use('/api/admin', adminLimiter, adminRouter);
 
 app.get('/health', (req, res) => {
   res.json({ ok: true });

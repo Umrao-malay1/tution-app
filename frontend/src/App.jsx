@@ -80,13 +80,7 @@ export default function App() {
           >
             Register
           </button>
-          <button
-            type="button"
-            className={`tab ${tab === 'admin' ? 'active' : ''}`}
-            onClick={() => setTab('admin')}
-          >
-            Admin
-          </button>
+          
         </nav>
       </header>
 
@@ -219,7 +213,16 @@ export default function App() {
 
       <footer className="footer">
         <span className="muted">© {new Date().getFullYear()} Tution App</span>
-        <span className="muted">
+        <span style={{ marginLeft: 12 }}>
+          <button
+            type="button"
+            className={`tab ${tab === 'admin' ? 'active' : ''}`}
+            onClick={() => setTab('admin')}
+          >
+            Admin
+          </button>
+        </span>
+        <span className="muted" style={{ marginLeft: 12 }}>
           Tip: On Render free tier, the backend may take a few seconds to “wake up”.
         </span>
       </footer>

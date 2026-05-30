@@ -39,11 +39,27 @@ router.post('/', async (req, res) => {
       about,
     } = req.body;
 
+    if (!name || typeof name !== 'string' || !name.trim()) {
+      return res.status(400).json({ message: 'Name is required.' });
+    }
+    if (!phone || typeof phone !== 'string' || !phone.trim()) {
+      return res.status(400).json({ message: 'Phone is required.' });
+    }
+    if (!city || typeof city !== 'string' || !city.trim()) {
+      return res.status(400).json({ message: 'City is required.' });
+    }
+    if (typeof feesPerMonth !== 'number' || feesPerMonth < 0) {
+      return res.status(400).json({ message: 'feesPerMonth must be a number >= 0.' });
+    }
+    if (!Array.isArray(subjects) || subjects.length === 0 || subjects.some((s) => typeof s !== 'string' || !s.trim())) {
+      return res.status(400).json({ message: 'subjects must be a non-empty array of strings.' });
+    }
+
     const tutor = new Tutor({
-      name,
-      phone,
-      subjects,
-      city,
+      name: name.trim(),
+      phone: phone.trim(),
+      subjects: subjects.map((s) => s.trim()),
+      city: city.trim(),
       area,
       feesPerMonth,
       teachingMode,

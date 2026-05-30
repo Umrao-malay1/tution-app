@@ -1,34 +1,12 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 
 export default function AdminPanel({ apiBase, onTutorUpdated }) {
   const [secret, setSecret] = useState('')
-  const [rememberDevice, setRememberDevice] = useState(false)
   const [status, setStatus] = useState('pending')
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [busyId, setBusyId] = useState(null)
-
-  useEffect(() => {
-    try {
-      const saved = sessionStorage.getItem('adminSecret')
-      if (saved) {
-        setSecret(saved)
-        setRememberDevice(true)
-      }
-    } catch {
-      /* ignore */
-    }
-  }, [])
-
-  useEffect(() => {
-    try {
-      if (rememberDevice && secret.trim()) sessionStorage.setItem('adminSecret', secret.trim())
-      else sessionStorage.removeItem('adminSecret')
-    } catch {
-      /* ignore */
-    }
-  }, [secret, rememberDevice])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -126,14 +104,6 @@ export default function AdminPanel({ apiBase, onTutorUpdated }) {
           </button>
         </div>
 
-        <label className="checkbox-field" style={{ marginTop: 12 }}>
-          <input
-            type="checkbox"
-            checked={rememberDevice}
-            onChange={(e) => setRememberDevice(e.target.checked)}
-          />
-          <span>Remember secret on this device (session storage)</span>
-        </label>
       </div>
 
       {error && (
