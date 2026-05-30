@@ -106,9 +106,6 @@ export default function App() {
             </p>
             <div className="meta-row">
               <span className="pill">
-                API <code>{apiBase}</code>
-              </span>
-              <span className="pill">
                 Showing <strong>{loading ? '—' : tutors.length}</strong> result(s) ·{' '}
                 <span className="muted">{queryLabel}</span>
               </span>
